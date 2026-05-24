@@ -1,0 +1,38 @@
+private image
+
+ImagePullBackOff occurs when Kubernetes is unable to download (pull) the container image from the registry.
+
+Troubleshooting: 
+step-1: create secret that contains the docker credentials.
+
+kubectl create secret docker-registry docker-secrete --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+<your-name> is your Docker username.
+<your-pword> is your Docker password.
+<your-email> is your Docker email.
+
+step-2: configure that  secret in yml file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nagaraju630/nginx:v1
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: docker-secret
+
