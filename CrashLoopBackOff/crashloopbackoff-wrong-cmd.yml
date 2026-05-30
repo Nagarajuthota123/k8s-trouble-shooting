@@ -1,12 +1,4 @@
-🚨 CrashLoopBackOff due to Wrong CMD
-📌 Description
 
-CrashLoopBackOff occurs when a container inside a Pod:
-
-Starts
-Fails immediately
-Restarts repeatedly
------------------------------------------------------------------------------------------------------------------------------------
 🚨 CrashLoopBackOff (Wrong CMD)
 📌 Cause
 
