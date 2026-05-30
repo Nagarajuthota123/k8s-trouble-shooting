@@ -1,0 +1,31 @@
+🚨 CrashLoopBackOff due to Wrong CMD
+📌 Description
+
+CrashLoopBackOff occurs when a container inside a Pod:
+
+Starts
+Fails immediately
+Restarts repeatedly
+-----------------------------------------------------------------------------------------------------------------------------------
+🚨 CrashLoopBackOff (Wrong CMD)
+📌 Cause
+
+Wrong command in Dockerfile:
+
+CMD ["python", "ap.py"]   # wrong file
+💥 Actual Error
+kubectl logs <pod-name>
+python: can't open file 'ap.py': No such file or directory
+🔁 Result
+
+Container fails → restarts again → CrashLoopBackOff
+
+🔍 Debug
+kubectl get pods
+kubectl logs <pod-name>
+kubectl describe pod <pod-name>
+✅ Fix
+CMD ["python", "app.py"]   # correct
+
+Rebuild & redeploy.
+
