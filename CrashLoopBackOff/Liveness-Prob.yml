@@ -1,0 +1,80 @@
+🚨 CrashLoopBackOff due to Liveness Probe (Kubernetes)
+📌 What is the issue?
+
+A CrashLoopBackOff occurs when a container keeps restarting repeatedly.
+
+One common reason:
+👉 Liveness probe is misconfigured
+
+Kubernetes checks if the app is alive.
+If the probe fails → container is killed → restarted → loop continues.
+
+❌ Failed Version (Causes CrashLoopBackOff)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-app
+  template:
+    metadata:
+      labels:
+        app: hello-app
+    spec:
+      containers:
+      - name: hello-app
+        image: hello-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /wrong   # ❌ incorrect path
+            port: 8000
+          initialDelaySeconds: 2
+          periodSeconds: 2
+🔴 Problem
+App runs on /
+Probe checks /wrong
+Returns 404
+Kubernetes restarts container → CrashLoopBackOff
+🔍 Error You Will See
+kubectl describe pod <pod-name>
+
+Output:
+
+Liveness probe failed: HTTP probe failed with statuscode: 404
+✅ Fixed Version (Working)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-app
+  template:
+    metadata:
+      labels:
+        app: hello-app
+    spec:
+      containers:
+      - name: hello-app
+        image: hello-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /        # ✅ correct path
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+🧠 Key Takeaway
+
+👉 Wrong liveness probe → container killed repeatedly → CrashLoopBackOff
+👉 Fix the probe path/port → pod becomes healthy
